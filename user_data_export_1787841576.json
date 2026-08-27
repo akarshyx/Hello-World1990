@@ -1,11 +1,18 @@
 {
-  "timestamp": 1787824066.896329,
-  "export_date": "Thu Aug 27 09:47:46 2026",
+  "timestamp": 1787841576.779476,
+  "export_date": "Thu Aug 27 14:39:36 2026",
   "total_users": 1,
   "user_balances": {
     "8598790977": 0.0
   },
-  "user_profiles": {},
+  "user_profiles": {
+    "8598790977": {
+      "joined_at": 1787837669.2444487,
+      "username": "arshxy",
+      "first_name": "#1",
+      "currency": "USD"
+    }
+  },
   "user_levels": {},
   "user_wagering_totals": {},
   "user_match_history": {},
