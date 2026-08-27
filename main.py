@@ -1896,10 +1896,10 @@ DEPOSIT_MENU_ITEMS = [
 
 CASINO_ASSET_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "attached_assets")
 WELCOME_BANNER_PATH = os.path.join(
-    CASINO_ASSET_DIR, "IMG_0317_1787815675472.jpeg"
+    CASINO_ASSET_DIR, "rollers_menu_banner.jpeg"
 )
 DEPOSIT_BANNER_PATH = os.path.join(
-    CASINO_ASSET_DIR, "IMG_7372_1787815769116.jpeg"
+    CASINO_ASSET_DIR, "rollers_deposit_banner.jpeg"
 )
 DEPOSIT_ALT_BANNER_PATH = os.path.join(
     CASINO_ASSET_DIR, "39F221B0-3266-4BCF-83A7-5AD323E8F220_1787766141152.png"
@@ -1909,11 +1909,19 @@ DEPOSIT_ALT_BANNER_PATH = os.path.join(
 # a project-root copy as the recovery source and restore the bot-local copy at
 # startup if it is missing or was replaced by an empty file.
 _PERMANENT_CASINO_ASSETS = {
+    "rollers_menu_banner.jpeg": (
+        "IMG_0317_1787837580016.jpeg",
+    ),
+    "rollers_deposit_banner.jpeg": (
+        "IMG_7372_1787837580016.jpeg",
+    ),
     "deposit_currency_banner.jpeg": (
+        "IMG_7372_1787837580016.jpeg",
         "IMG_7372_1787152172187.jpeg",
         "IMG_7372_1787078421166.jpeg",
     ),
     "bonus_center_banner.jpeg": (
+        "IMG_7374_1787837580016.jpeg",
         "IMG_7374_1787834031285.jpeg",
         "IMG_7374_1787152155643.jpeg",
         "IMG_7374_1787078421166.jpeg",
@@ -11589,19 +11597,24 @@ def _bonus_menu_content(user_id: str) -> tuple[str, InlineKeyboardMarkup]:
     return text, InlineKeyboardMarkup(keyboard)
 
 async def _send_bonus_menu(target, context, is_callback: bool = False) -> None:
-    """Show the bonus banner once, with the menu in a separate message."""
+    """Show the bonus banner with its buttons and no text panel."""
     user_id = target.from_user.id if is_callback else target.from_user.id
-    menu_text, markup = _bonus_menu_content(str(user_id))
+    _, markup = _bonus_menu_content(str(user_id))
     chat_id = target.message.chat_id if is_callback else target.chat_id
 
-    # Callback screens should reuse the existing menu message.  Re-sending the
-    # photo on every Back tap created a growing stack of duplicate banners.
+    # Back from a bonus sub-screen should restore the banner itself.  Editing
+    # the callback message to media removes the large text panel entirely.
     if is_callback:
-        await target.message.edit_text(
-            menu_text,
-            reply_markup=markup,
-            parse_mode=ParseMode.HTML,
-        )
+        if os.path.isfile(_BONUS_BANNER_PATH):
+            try:
+                with open(_BONUS_BANNER_PATH, "rb") as photo:
+                    await target.message.edit_media(
+                        media=InputMediaPhoto(media=photo),
+                        reply_markup=markup,
+                    )
+                return
+            except Exception as exc:
+                logger.warning("[BONUS] Could not restore bonus banner on Back: %s", exc)
         return
 
     try:
@@ -11609,16 +11622,10 @@ async def _send_bonus_menu(target, context, is_callback: bool = False) -> None:
             await context.bot.send_photo(
                 chat_id=chat_id,
                 photo=photo,
+                reply_markup=markup,
             )
     except Exception as exc:
         logger.warning("[BONUS] Could not send bonus banner: %s", exc)
-
-    await context.bot.send_message(
-        chat_id=chat_id,
-        text=menu_text,
-        reply_markup=markup,
-        parse_mode=ParseMode.HTML,
-    )
 
 async def handle_bonus_tasks(query, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Show the activity task overview without inventing claimable rewards."""
