@@ -1,16 +1,23 @@
 {
-  "timestamp": 1787844343.3450718,
-  "export_date": "Thu Aug 27 15:25:43 2026",
-  "total_users": 2,
+  "timestamp": 1787857143.9803514,
+  "export_date": "Thu Aug 27 18:59:03 2026",
+  "total_users": 3,
   "user_balances": {
     "8598790977": 0.0,
-    "7234698079": 0.0
+    "7234698079": 0.0,
+    "5546452717": 0.0
   },
   "user_profiles": {
     "8598790977": {
       "joined_at": 1787837669.2444487,
       "username": "arshxy",
       "first_name": "#1",
+      "currency": "USD"
+    },
+    "5546452717": {
+      "joined_at": 1787846994.3596997,
+      "username": "carinatae",
+      "first_name": "dry",
       "currency": "USD"
     }
   },
